@@ -16,6 +16,8 @@ test_set = df[num_data:]
 
 train_x = train_set[['x1', 'x2']].as_matrix()
 train_t = train_set['t'].as_matrix().reshape([len(train_set), 1])
+print train_x
+print train_t
 test_x = test_set[['x1', 'x2']].as_matrix()
 test_t = test_set['t'].as_matrix().reshape([len(test_set), 1])
 
