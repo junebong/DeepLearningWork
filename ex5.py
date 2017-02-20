@@ -33,19 +33,32 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 sess = tf.InteractiveSession()
 sess.run(tf.initialize_all_variables())
 
+train_accuracy = []
+test_accuracy = []
+
 i = 0
-for _ in range(4000):
+for _ in range(2000):
     i += 1
     target = randint(0, 80, 10)
+    # print target
     run_x = train_x[target,]
     run_t = train_t[target,]
 
     sess.run(train_step, feed_dict={x: run_x, t: run_t})
+    acc_val_1 = sess.run(accuracy, feed_dict={x: run_x, t: run_t})
+    train_accuracy.append(acc_val_1)
+    loss_val, acc_val = sess.run([loss, accuracy],
+                                 feed_dict={x: test_x, t: test_t})
+    test_accuracy.append(acc_val)
     if i % 100 == 0:
-        loss_val, acc_val = sess.run([loss, accuracy],
-                                     feed_dict={x:test_x, t:test_t})
         print('Step: %d, Loss: %f, Accuracy: %f' % (i, loss_val, acc_val))
 
 w0_val, w_val = sess.run([w0, w])
 print w0_val
 print w_val
+
+fig = plt.figure(figsize=(8,6))
+subplot = fig.add_subplot(1,1,1)
+subplot.plot(range(len(train_accuracy)), train_accuracy, linewidth=2, label='Training set')
+subplot.plot(range(len(test_accuracy)), test_accuracy, linewidth=2, label='Test set')
+subplot.legend(loc='upper left')
