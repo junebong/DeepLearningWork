@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # データ・セットを作る
-df = pd.read_csv("./data_csv/ex2.csv", names=('in','x1','x2','t'), index_col='in')
+df = pd.read_csv("../../data_csv/ex2.csv", names=('in','x1','x2','t'), index_col='in')
 
 num_data = int(len(df)*0.8)
 
@@ -19,15 +19,22 @@ train_t = train_set['t'].as_matrix().reshape([len(train_set), 1])
 test_x = test_set[['x1', 'x2']].as_matrix()
 test_t = test_set['t'].as_matrix().reshape([len(test_set), 1])
 
+num_units = 1
+mult = train_x.flatten().mean()
+
 x = tf.placeholder(tf.float32, [None, 2])
-w = tf.Variable(tf.zeros([2, 1]))
-w0 = tf.Variable(tf.zeros([1]))
-f = tf.matmul(x, w) + w0
-p = tf.sigmoid(f)
+
+# w = tf.Variable(tf.zeros([2, 1]))
+w0 = tf.Variable(tf.zeros([2, num_units]))
+
+#w0 = tf.Variable(tf.zeros([1]))
+b0 = tf.Variable(tf.zeros([num_units]))
+
+p = tf.nn.sigmoid(tf.matmul(x, w0) + b0*mult)
 
 t = tf.placeholder(tf.float32, [None, 1])
 loss = -tf.reduce_sum(t*tf.log(p) + (1-t)*tf.log(1-p))
-train_step = tf.train.AdamOptimizer().minimize(loss)
+train_step = tf.train.GradientDescentOptimizer(0.001).minimize(loss)
 
 # 記号判定はなに？
 correct_prediction = tf.equal(tf.sign(p-0.5), tf.sign(t-0.5))
@@ -52,7 +59,7 @@ for _ in range(20000):
     acc_val = sess.run(accuracy, feed_dict={x:test_x, t:test_t})
     test_accuracy.append(acc_val)
 
-w0_val, w_val = sess.run([w0, w])
+w0_val, w_val = sess.run([b0, w0])
 w0_val, w1_val, w2_val = w0_val[0], w_val[0][0], w_val[1][0]
 print(w0_val, w1_val, w2_val)
 
@@ -84,3 +91,5 @@ subplot.plot(range(len(train_accuracy)), train_accuracy,
 subplot.plot(range(len(test_accuracy)), test_accuracy,
              linewidth=2, label='Test set')
 subplot.legend(loc='upper left')
+
+plt.show()
