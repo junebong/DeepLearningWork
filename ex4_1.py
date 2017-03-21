@@ -54,8 +54,8 @@ for _ in range(2000):
         print('Step: %d, Loss: %f, Accuracy: %f' % (i, loss_val, acc_val))
 
 w0_val, w_val = sess.run([w0, w])
-print w0_val
-print w_val
+print( w0_val)
+print( w_val)
 
 fig = plt.figure(figsize=(8,6))
 subplot = fig.add_subplot(1,1,1)

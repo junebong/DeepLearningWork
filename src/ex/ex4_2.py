@@ -64,7 +64,7 @@ for x2 in np.linspace(0, 30, 100):
         locations.append((x1, x2))
 
 p_vals = sess.run(p, feed_dict={x:locations})
-print p_vals
+print(p_vals)
 p_vals = p_vals.reshape((300,100))
 subplot.imshow(p_vals, origin='lower', extent=(0,30,0,30), cmap=plt.cm.gray_r, alpha=0.5)
 
