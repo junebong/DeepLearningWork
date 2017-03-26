@@ -17,21 +17,27 @@ train_t = train_set[['setosa', 'versicolor', 'virginia']].as_matrix().reshape([l
 test_x = test_set[['calyx_len', 'calyx_wid', 'petal_len', 'petal_wid']].as_matrix()
 test_t = test_set[['setosa', 'versicolor', 'virginia']].as_matrix().reshape([len(test_set), 3])
 
-num_units = 4 # ? どう決めるか？　変数の数とニアリ
+num_units1 = 4
+num_units2 = 3
 mult = train_x.flatten().mean()
 # print (mult)
 
 x = tf.placeholder(tf.float32, [None, 4]) # 4つの変数
 
 # 隠れ層1
-w1 = tf.Variable(tf.truncated_normal([4, num_units])) # 4つの変数
-b1 = tf.Variable(tf.zeros(num_units))
-hidden1 = tf.nn.relu(tf.matmul(x, w1) + b1 * mult)
+w1 = tf.Variable(tf.truncated_normal([4, num_units1])) # 4つの変数
+b1 = tf.Variable(tf.zeros(num_units1))
+hidden1 = tf.nn.tanh(tf.matmul(x, w1) + b1 * mult)
+
+# 隠れ層2
+w2 = tf.Variable(tf.truncated_normal([num_units1, num_units2]))
+b2 = tf.Variable(tf.zeros(num_units2))
+hidden2 = tf.nn.tanh(tf.matmul(hidden1, w2) + b2 * mult)
 
 # 出力層
-w0 = tf.Variable(tf.truncated_normal([num_units, 3])) # 3つの分類
-b0 = tf.Variable(tf.zeros([3])) # 3つの分類
-p = tf.nn.sigmoid(tf.matmul(hidden1, w0) + b0 * mult)
+w0 = tf.Variable(tf.truncated_normal([num_units2, 3]))
+b0 = tf.Variable(tf.zeros([3]))
+p = tf.nn.sigmoid(tf.matmul(hidden2, w0) + b0 * mult)
 
 t = tf.placeholder(tf.float32, [None, 3]) # 3つの分類
 
@@ -41,7 +47,7 @@ train_step = tf.train.GradientDescentOptimizer(0.001).minimize(loss)
 correct_rediction = tf.equal(tf.sign(p-0.5), tf.sign(t-0.5))
 accuracy = tf.reduce_mean(tf.cast(correct_rediction, tf.float32))
 
-sess = tf.InteractiveSession() # 途中すポップ可能
+sess = tf.InteractiveSession() # 途中スキップ可能
 sess.run(tf.initialize_all_variables())
 
 train_accuracy = []
